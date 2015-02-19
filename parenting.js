@@ -33,13 +33,6 @@ var Parenting = {
 
 	isSpeaking: false,
 
-	cleanSentenceText: function(target) {
-		target = target.replace(/#/g,''); //hashtags
-		target = target.replace(/@/g,''); //at signs
-		target = target.replace(/http:\/\/t.co\/\S*/g,''); //t.co
-		return target;
-	},
-
 	handleSentence: function() {
 		if (this.sentenceQueue.length == 0 || this.isSpeaking === true) {
 			return;
@@ -47,7 +40,6 @@ var Parenting = {
 		isSpeaking = true;
 		var currentSentence = this.sentenceQueue[0];
 		this.sentenceQueue = this.sentenceQueue.splice(1,this.sentenceQueue.length-1);
-		currentSentence = this.cleanSentenceText(currentSentence);
 		Say.speak('Alex', currentSentence, function() {
 			isSpeaking = false;
 			this.handleSentence();
