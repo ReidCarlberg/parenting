@@ -11,7 +11,7 @@ var _ = require('lodash');
 
 module.exports = function(options) {
 
-	var name = options.name || "Child!";
+	name = options.name || "Child!";
 
 	var prompts = [
 		{"id": "1", "prompt": "have you used your napkin?"},

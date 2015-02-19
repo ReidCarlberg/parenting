@@ -2,7 +2,7 @@
   "name": "parenting",
   "version": "0.0.1",
   "description": "Parenting module helps developers raise children more efficiently.",
-  "main": "index.js",
+  "main": "parenting.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
