@@ -1,6 +1,6 @@
 {
   "name": "parenting",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "Parenting module helps developers raise children more efficiently.",
   "main": "parenting.js",
   "scripts": {
@@ -16,5 +16,9 @@
     "lodash": "^3.2.0",
     "readline": "0.0.7",
     "say": "^0.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ReidCarlberg/parenting"
   }
 }

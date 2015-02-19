@@ -1,6 +1,6 @@
 /*
 	parenting
-	v 0.0.1
+	v 0.0.6
 	@ReidCarlberg - reid.carlberg@gmail.com
 	February 18, 2015
 */
@@ -16,7 +16,7 @@ var rl = readline.createInterface({
 
 var Parenting = {
 
-	child: "Phineas",
+	child: "DefaultName",
 
 	prompts: [
 		{"id": "1", "prompt": "have you used your napkin?"},
