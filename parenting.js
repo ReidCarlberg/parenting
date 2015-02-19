@@ -16,7 +16,7 @@ var rl = readline.createInterface({
 
 var Parenting = {
 
-	name: "Phineas",
+	child: "Phineas",
 
 	prompts: [
 		{"id": "1", "prompt": "have you used your napkin?"},
@@ -52,7 +52,7 @@ var Parenting = {
 			var prompt = _.find(that.prompts, { 'id': answer });
 
 			if (prompt) {
-				that.sentenceQueue.push(that.name + ", " + prompt.prompt);  	
+				that.sentenceQueue.push(that.child + ", " + prompt.prompt);  	
 				that.handleSentence();
 			} else if (answer === "q") {
 				rl.close();

@@ -2,7 +2,7 @@
 
 var parenting = require("./parenting.js");
 
-parenting.name = "Jason";
+parenting.child = "Albert";
 
 parenting.start();
 
