@@ -12,8 +12,8 @@ npm install parenting
 ```
 
 
-Example App
-===========
+Example Node.js App
+==================
 
 ```
 var parenting = require("parenting");
