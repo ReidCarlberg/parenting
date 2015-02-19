@@ -9,72 +9,78 @@ var Say = require('say');
 var readline = require('readline');
 var _ = require('lodash');
 
-module.exports = function(options) {
+var rl = readline.createInterface({
+	  input: process.stdin,
+	  output: process.stdout
+	});
 
-	name = options.name || "Child!";
+var Parenting = {
 
-	var prompts = [
+	name: "Phineas",
+
+	prompts: [
 		{"id": "1", "prompt": "have you used your napkin?"},
 		{"id": "2", "prompt": "eat over your plate."},  	
 		{"id": "3", "prompt": "sit up straight."},  	
 		{"id": "4", "prompt": "chew with your mouth closed."},
 		{"id": "5", "prompt": "stop doing that!"},  	
 		{"id": "6", "prompt": "sit in your seat."},
-		{"id": "7", "prompt": "use your fork."}
-	];
+		{"id": "7", "prompt": "use your fork."},
+		{"id": "8", "prompt": "clean your room."}
+	],
 
-	var sentenceQueue = [];
-	var isSpeaking = false;
+	sentenceQueue: [],
 
-	var rl = readline.createInterface({
-	  input: process.stdin,
-	  output: process.stdout
-	});
+	isSpeaking: false,
 
-	function cleanSentenceText(target) {
+	cleanSentenceText: function(target) {
 		target = target.replace(/#/g,''); //hashtags
 		target = target.replace(/@/g,''); //at signs
 		target = target.replace(/http:\/\/t.co\/\S*/g,''); //t.co
 		return target;
-	}
+	},
 
-	function handleSentence() {
-		if (sentenceQueue.length == 0 || isSpeaking === true) {
+	handleSentence: function() {
+		if (this.sentenceQueue.length == 0 || this.isSpeaking === true) {
 			return;
 		}
 		isSpeaking = true;
-		var currentSentence = sentenceQueue[0];
-		sentenceQueue = sentenceQueue.splice(1,sentenceQueue.length-1);
-		currentSentence = cleanSentenceText(currentSentence);
+		var currentSentence = this.sentenceQueue[0];
+		this.sentenceQueue = this.sentenceQueue.splice(1,this.sentenceQueue.length-1);
+		currentSentence = this.cleanSentenceText(currentSentence);
 		Say.speak('Alex', currentSentence, function() {
-			//console.log('***Said: ' + currentSentence);
 			isSpeaking = false;
-			handleSentence();
+			this.handleSentence();
 		})
-	}
+	},
 
-	function askQuestion() {
+	ask: function() {
+		that = this;
 		rl.question("Yes? ", function(answer) {
-			var prompt = _.find(prompts, { 'id': answer });
+			var prompt = _.find(that.prompts, { 'id': answer });
 
 			if (prompt) {
-				sentenceQueue.push(name + ", " + prompt.prompt);  	
-				handleSentence();
+				that.sentenceQueue.push(that.name + ", " + prompt.prompt);  	
+				that.handleSentence();
 			} else if (answer === "q") {
 				rl.close();
 				return;
 			} else {
-				for (i = 0; i < prompts.length; i++) {
-					console.log(prompts[i].id + ". " + prompts[i].prompt);
+				for (i = 0; i < that.prompts.length; i++) {
+					console.log(that.prompts[i].id + ". " + that.prompts[i].prompt);
 				}
 				console.log("(q)uit");
 			}
 
-			askQuestion();
+			that.ask();
 
 		});
+	},
 
-	}
+	start: function() {
+		this.ask();
+	}	
 
-	askQuestion();
 }
+
+module.exports = Parenting;
