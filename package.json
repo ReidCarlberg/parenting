@@ -1,6 +1,6 @@
 {
   "name": "parenting",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Parenting module helps developers raise children more efficiently.",
   "main": "parenting.js",
   "scripts": {

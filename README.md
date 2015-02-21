@@ -18,7 +18,7 @@ Example Node.js App
 ```
 var parenting = require("parenting");
 parenting.config.child = "Jessica";
-parenting.config.auto = "Jessica";
+parenting.config.auto = true;
 parenting.start();
 ```
 
