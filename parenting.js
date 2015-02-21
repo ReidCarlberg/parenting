@@ -25,6 +25,7 @@ var defaultConfig = {
 	child: "DefaultName",
 	prompt: "Yes?",
 	mute: false,
+	auto: false,
 	prompts: [
 		{"id": "1", "prompt": "have you used your napkin?"},
 		{"id": "2", "prompt": "eat over your plate."},  	
@@ -47,7 +48,10 @@ var Parenting = {
 
 	isSpeaking: false,
 
+	nextAuto: 0,
+
 	handlers: {
+
 		t: function() {
 			console.log("test!");
 		},
@@ -81,11 +85,76 @@ var Parenting = {
 		},
 
 		v: function(data) {
+			//doesn't appear to actually change voices? 
+			var voices = ["Alex", "Samantha"];
+			var newVoice = data.substring(data.indexOf(' ')+1);
+			if (_.contains(voices, newVoice) > -1) {
+				console.log("Setting new voice to " + newVoice);
+				that.config.voice = newVoice;
+			} else {
+				console.log("Voices: " + voices);
+			}
+		}, 
 
+		p: function(data) {
+			var newPrompt = data.substring(data.indexOf(' ')+1);
+			if (newPrompt) {
+				console.log("Setting new prompt to " + newPrompt);
+				that.config.prompt = newPrompt;
+			}
+		},
+
+		o: function(data) {
+			//data = \o 11 something something 
+			//where 11 is the key, something something is the prompt
+			//console.log("handling o");
+			if (_.trim(data).length < 6) {
+				console.log("Syntax: \\o {id} {prompt} -- eg \\o 1 eat your vegetables");
+				return;
+			}
+			var firstSpace = data.indexOf(' ');
+			var secondSpace = data.indexOf(' ', data.indexOf(' '));
+			var newPrompt = data.substring(firstSpace + secondSpace+1);
+			var newId = data.substring(firstSpace + 1, firstSpace + secondSpace);
+			//console.log("1:" + firstSpace + ", 2: " + secondSpace);
+			var newElement = { 
+				'id': newId,
+				'prompt': newPrompt
+			};
+
+			that.config.prompts.push(newElement);
+		},
+
+		k: function() {
+			console.log("Killing all prompts. \\r to reset to default.");
+			that.config.prompts = [];
+		},
+
+		a: function() {
+			if (that.config.auto === false) {
+				console.log("Entering auto mode.");
+				that.config.auto = true;
+				that.handleNextAutoSentence();
+				that.handleSentence();
+			} else {
+				console.log("Leaving auto mode.");
+				that.config.auto = false;
+			}
 		}
 	},
 
+	handleNextAutoSentence: function() {
+		//console.log("in handleNextAutoSentence");
+		if (this.nextAuto > this.config.prompts.length - 1) {
+			this.nextAuto = 0;
+		}
+		//console.log(this.nextAuto);
+		this.sentenceQueue.push(this.buildAskSentence(this.config.prompts[this.nextAuto]));
+		this.nextAuto++;
+	},
+
 	handleSentence: function() {
+		that = this;
 		if (this.sentenceQueue.length == 0 || this.isSpeaking === true || this.config.mute === true) {
 			return;
 		}
@@ -94,8 +163,24 @@ var Parenting = {
 		this.sentenceQueue = this.sentenceQueue.splice(1,this.sentenceQueue.length-1);
 		Say.speak('Alex', currentSentence, function() {
 			isSpeaking = false;
-			this.handleSentence();
+			if (that.config.auto === true) {
+				//console.log("in auto");
+				if (that.config.prompts.length == 0) {
+					console.log("Use \o id prompt to add a prompt.");
+				} else {
+					//console.log("getting next sentence");
+					that.handleNextAutoSentence();
+				}	
+			}
+			that.handleSentence();
+
 		})
+	},
+
+	buildAskSentence: function(data) {
+		that = this;
+		var sentenceTemp = that.config.child + ", " + data.prompt;
+		return sentenceTemp;
 	},
 
 	ask: function() {
@@ -105,7 +190,7 @@ var Parenting = {
 			var prompt = _.find(that.config.prompts, { 'id': answer });
 
 			if (prompt) {
-				var sentenceTemp = that.config.child + ", " + prompt.prompt;
+				var sentenceTemp = that.buildAskSentence(prompt);
 				if (that.config.mute === false) {
 					that.sentenceQueue.push(sentenceTemp);					
 					that.handleSentence();	
@@ -128,7 +213,7 @@ var Parenting = {
 				for (i = 0; i < that.config.prompts.length; i++) {
 					console.log(that.config.prompts[i].id + ". " + that.config.prompts[i].prompt);
 				}
-				console.log("\\(q)uit (m)ute (v)oice (c)hild (r)eset (t)est");
+				console.log("\\(q)uit (a)uto (m)ute (v)oice (c)hild (r)eset (t)est (o)ption (k)ill");
 			}
 
 			that.ask();
@@ -150,6 +235,11 @@ var Parenting = {
 
 	start: function() {
 		this.readConfig();
+		if (this.config.auto === true) {
+			console.log("Starting in Auto Parenting mode \\a to exit.");
+			this.handleNextAutoSentence();
+			this.handleSentence();
+		}
 		this.ask();
 	}	
 
