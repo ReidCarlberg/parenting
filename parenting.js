@@ -42,7 +42,7 @@ var Parenting = {
 
 	configFile: "./parenting.config.json",
 
-	config: {},
+	config: defaultConfig,
 
 	sentenceQueue: [],
 
@@ -224,9 +224,7 @@ var Parenting = {
 	readConfig: function() {
 		if (fs.existsSync(configFile)) {
 			this.config = js.readFileSync(configFile);
-		} else {
-			this.config = defaultConfig;
-		}
+		} 
 	},
 
 	saveConfig: function() {
